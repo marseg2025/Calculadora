@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Múltiplas com Fechamento por Combinações</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Múltiplas com Fechamento por Combinações</h1>
+        <p>Gere todas as combinações de seus eventos e selecione até 10 bilhetes para otimizar suas chances e lucros!</p>
+
+        <hr>
+
+        <div class="input-section">
+            <h2>Configuração dos Eventos</h2>
+            
+            <div class="form-group">
+                <label for="stakePerBet">Investimento Total Desejado (R$):</label>
+                <input type="number" id="stakePerBet" value="10.00" min="0.01" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="betDistributionType">Tipo de Distribuição da Aposta:</label>
+                <select id="betDistributionType" onchange="updateSummary()">
+                    <option value="direct">Direta (Mesmo valor por bilhete)</option>
+                    <option value="optimized">Otimizada (Lucro igual por bilhete)</option>
+                </select>
+                <p class="small-text"><i>Direta: O valor acima é apostado em cada bilhete selecionado. Otimizada: O valor acima é o investimento total, distribuído para que o lucro seja igual em qualquer bilhete vencedor.</i></p>
+            </div>
+
+            <div class="add-event-section event-card">
+                <h3>Adicionar Novo Evento</h3>
+                <div class="form-group">
+                    <label for="eventName">Nome do Evento (ex: time A vs time B):</label>
+                    <input type="text" id="eventName" placeholder="Ex: Grêmio vs Inter">
+                </div>
+                <div class="form-group">
+                    <label for="eventDateTime">Data e Hora do Evento:</label>
+                    <input type="datetime-local" id="eventDateTime">
+                </div>
+                <div class="form-group">
+                    <label for="newEventType">Tipo de Aposta/Mercado:</label>
+                    <select id="newEventType" onchange="updateNewEventOdds()">
+                        <option value="futebol_1x2">Futebol (1X2)</option>
+                        <option value="tenis_mesa_12">Tênis de Mesa (12)</option>
+                        <option value="total_gols_ou">Total de Gols (Acima/Abaixo)</option>
+                        <option value="ambos_marcam">Ambos Marcam</option>
+                    </select>
+                </div>
+                <div class="odds-inputs" id="newOddsInputContainer">
+                    <div class="form-group">
+                        <label for="newOdd_1">Odd Time A (1):</label>
+                        <input type="number" id="newOdd_1" value="2.00" step="0.01" min="1.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="newOdd_X">Odd Empate (X):</label>
+                        <input type="number" id="newOdd_X" value="3.20" step="0.01" min="1.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="newOdd_2">Odd Time B (2):</label>
+                        <input type="number" id="newOdd_2" value="3.50" step="0.01" min="1.01">
+                    </div>
+                </div>
+                <button onclick="addNewEventToList()">Adicionar Evento à Lista</button>
+            </div>
+            
+            <div class="form-group">
+                 <h3>Eventos Adicionados (<span id="currentEventCount">0</span>)</h3>
+                 <div id="eventsListContainer">
+                    <p>Nenhum evento adicionado ainda. Use o formulário acima.</p>
+                 </div>
+            </div>
+           
+            <button onclick="generateCombinations()">Gerar e Ver Combinações</button>
+            <button onclick="removeLastEventFromList()">Remover Último Evento da Lista</button>
+            <button onclick="exportData()">Exportar Dados</button>
+            <button onclick="importData()" class="import-data-button">Importar Dados</button>
+            <button onclick="clearAllData()" class="clear-data-button">Limpar Todos os Dados</button>
+        </div>
+
+        <hr>
+
+        <div class="output-section"> <h2>Combinações Geradas (<span id="selectedCountDisplay">0/0 Selecionadas</span>)</h2>
+            <p id="totalCombinationsCount">Total de Combinações Geradas: 0</p>
+            
+            <div class="filter-sort-controls">
+                <h4>Opções de Visualização:</h4>
+                <div class="form-group inline-group">
+                    <label for="minOddFilter">Odd Total Mínima:</label>
+                    <input type="number" id="minOddFilter" step="0.01" min="1.01" value="1.01" oninput="applyFiltersAndSort()">
+                </div>
+                <div class="form-group inline-group">
+                    <label for="maxOddFilter">Odd Total Máxima:</label>
+                    <input type="number" id="maxOddFilter" step="0.01" min="1.01" value="99999.99" oninput="applyFiltersAndSort()">
+                </div>
+                <div class="form-group inline-group">
+                    <label for="sortOrder">Ordenar por Odd Total:</label>
+                    <select id="sortOrder" onchange="applyFiltersAndSort()">
+                        <option value="none">Padrão</option>
+                        <option value="asc">Menor para Maior</option>
+                        <option value="desc">Maior para Menor</option>
+                    </select>
+                </div>
+                <div class="form-group inline-group">
+                    <label for="searchText">Buscar no Bilhete:</label>
+                    <input type="text" id="searchText" placeholder="Ex: Time A, 2.5 Gols" oninput="applyFiltersAndSort()">
+                </div>
+            </div>
+            <hr>
+
+            <div id="combinationsOutput">
+                <p>Nenhuma combinação gerada ainda. Adicione eventos e clique em 'Gerar'.</p>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="summary-section">
+            <h2>Resumo da Estratégia Selecionada</h2>
+            
+            <p>Investimento Total Desejado (Base): R$ <span id="displayStakePerBet">0.00</span></p>
+            <p>Total de Bilhetes Selecionados: <span id="summarySelectedCount">0</span></p>
+            <p><strong>Investimento Total Real: R$ <span id="totalInvestment">0.00</span></strong></p>
+            <p><strong>Retorno Potencial Bruto: R$ <span id="potentialReturn">0.00</span></strong></p>
+            <p><strong>Lucro Líquido Potencial: R$ <span id="netProfit">0.00</span></strong></p>
+            <p><strong>Multiplicador (Lucro Líquido / Investimento Total Real): <span id="multiplier">0.00x</span></strong></p>
+            <p id="profitMessage" class="message"></p>
+
+            <div id="individualStakesOutput" style="display: none;">
+                <h3>Apostas Individuais (Distribuição Otimizada)</h3>
+                <ul id="individualStakesList">
+                    </ul>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="result-input-section">
+            <h2>Conferência de Resultados</h2>
+            <p>Selecione o resultado real para cada evento para identificar as combinações vencedoras.</p>
+            <div id="eventResultsInputContainer">
+                <p>Adicione eventos na seção de Configuração para ver os campos de resultado aqui.</p>
+            </div>
+            <button onclick="checkWinningCombinations()">Conferir Combinações Vencedoras</button>
+            <div id="winningCombinationsOutput">
+                </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
