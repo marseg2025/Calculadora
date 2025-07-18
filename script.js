@@ -657,9 +657,10 @@ function updateSummary() {
     const betDistributionType = document.getElementById('betDistributionType').value;
     const selectedCheckboxes = document.querySelectorAll('#combinationsOutput input[type="checkbox"]:checked');
     
-    // CALCULA O LIMITE MÁXIMO DE BILHETES SELECIONÁVEIS (30% do total de combinações)
+    // REMOVIDO: Limite de 30% e a lógica associada.
     const totalCombinations = allCombinations.length;
-    const maxAllowedSelectedBets = Math.ceil(totalCombinations * 0.30); // Arredonda para cima
+    // const maxAllowedSelectedBets = Math.ceil(totalCombinations * 0.30); // Esta linha foi removida
+    const maxAllowedSelectedBets = totalCombinations; // Definindo o limite como o total de combinações
 
     const individualStakesOutput = document.getElementById('individualStakesOutput');
     const individualStakesList = document.getElementById('individualStakesList');
@@ -681,6 +682,8 @@ function updateSummary() {
         return;
     }
 
+    // REMOVIDO: A verificação de limite e o alert associado.
+    /*
     if (selectedCheckboxes.length > maxAllowedSelectedBets) {
         alert(`Você pode selecionar no máximo ${maxAllowedSelectedBets} bilhetes (30% do total de ${totalCombinations} combinações).`);
         // Desmarca o último checkbox selecionado para forçar o limite
@@ -689,6 +692,7 @@ function updateSummary() {
         setTimeout(updateSummary, 0); 
         return;
     }
+    */
 
     let selectedCombinations = [];
     selectedCheckboxes.forEach(checkbox => {
