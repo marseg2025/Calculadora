@@ -148,11 +148,15 @@ function clearAllData() {
         eventActualResults = {}; // Limpa os resultados reais também
         eventCounter = 0; // Reseta o contador
 
+        // NOVO: Limpa explicitamente o display das combinações ANTES de chamar generateCombinations
+        document.getElementById('combinationsOutput').innerHTML = '';
+        document.getElementById('totalCombinationsCount').textContent = `Total de Combinações Geradas: 0`;
+
         localStorage.clear(); // Limpa todo o localStorage do aplicativo
 
         renderEventsList();
         resetNewEventForm();
-        generateCombinations(); // Irá exibir a mensagem de "Nenhum evento adicionado"
+        generateCombinations(); // Irá agora apenas definir a mensagem de "Adicione eventos..."
         updateSummary();
         renderEventResultsInputs(); // Limpa os campos de resultado
 
@@ -272,7 +276,6 @@ function addNewEventToList() {
 
     renderEventsList();
     renderEventResultsInputs(); // NOVO: Renderiza os inputs de resultado
-    resetNewEventForm();
     generateCombinations();
     saveData();
 }
@@ -524,7 +527,8 @@ function generateCombinations() {
     
     if (eventsAdded.length === 0) {
         const combinationsOutput = document.getElementById('combinationsOutput');
-        combinationsOutput.innerHTML = '<p>Adicione eventos na seção acima para gerar as combinações.</p>';
+        // Mensagem harmonizada com o manual do index.html
+        combinationsOutput.innerHTML = '<p>Adicione eventos para ver as combinações aqui.</p>'; 
         document.getElementById('totalCombinationsCount').textContent = `Total de Combinações Geradas: 0`;
         updateSummary(); 
         saveData(); 
@@ -571,9 +575,11 @@ function generateCombinations() {
 
     generateAllCombos(0, []); 
 
-    // Chama applyFiltersAndSort para exibir as combinações (já com filtros/ordenação aplicados)
-    applyFiltersAndSort(); 
-    saveData(); 
+    // NOVO: Deferir a aplicação de filtros e ordenação para garantir que o DOM esteja pronto
+    setTimeout(() => {
+        applyFiltersAndSort(); 
+        saveData(); 
+    }, 50); // Pequeno atraso (50ms)
 }
 
 // NOVO: Função para aplicar filtros e ordenação e exibir as combinações
@@ -657,10 +663,9 @@ function updateSummary() {
     const betDistributionType = document.getElementById('betDistributionType').value;
     const selectedCheckboxes = document.querySelectorAll('#combinationsOutput input[type="checkbox"]:checked');
     
-    // REMOVIDO: Limite de 30% e a lógica associada.
+    // CALCULA O LIMITE MÁXIMO DE BILHETES SELECIONÁVEIS (30% do total de combinações)
     const totalCombinations = allCombinations.length;
-    // const maxAllowedSelectedBets = Math.ceil(totalCombinations * 0.30); // Esta linha foi removida
-    const maxAllowedSelectedBets = totalCombinations; // Definindo o limite como o total de combinações
+    const maxAllowedSelectedBets = Math.ceil(totalCombinations * 0.30); // Arredonda para cima
 
     const individualStakesOutput = document.getElementById('individualStakesOutput');
     const individualStakesList = document.getElementById('individualStakesList');
@@ -682,8 +687,6 @@ function updateSummary() {
         return;
     }
 
-    // REMOVIDO: A verificação de limite e o alert associado.
-    /*
     if (selectedCheckboxes.length > maxAllowedSelectedBets) {
         alert(`Você pode selecionar no máximo ${maxAllowedSelectedBets} bilhetes (30% do total de ${totalCombinations} combinações).`);
         // Desmarca o último checkbox selecionado para forçar o limite
@@ -692,7 +695,6 @@ function updateSummary() {
         setTimeout(updateSummary, 0); 
         return;
     }
-    */
 
     let selectedCombinations = [];
     selectedCheckboxes.forEach(checkbox => {
