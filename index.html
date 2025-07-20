@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h1>Calculadora de Múltiplas com Fechamento por Combinações</h1>
-        <p>Gere todas as combinações de seus eventos e selecione até 10 bilhetes para otimizar suas chances e lucros!</p>
+        <p>Gere todas as combinações de seus eventos e selecione quantos bilhetes quiser para otimizar suas chances e lucros!</p>
 
         <hr>
 
@@ -27,100 +27,90 @@
                     <option value="direct">Direta (Mesmo valor por bilhete)</option>
                     <option value="optimized">Otimizada (Lucro igual por bilhete)</option>
                 </select>
-                <p class="small-text"><i>Direta: O valor acima é apostado em cada bilhete selecionado. Otimizada: O valor acima é o investimento total, distribuído para que o lucro seja igual em qualquer bilhete vencedor.</i></p>
-            </div>
-
-            <div class="add-event-section event-card">
-                <h3>Adicionar Novo Evento</h3>
-                <div class="form-group">
-                    <label for="eventName">Nome do Evento (ex: time A vs time B):</label>
-                    <input type="text" id="eventName" placeholder="Ex: Grêmio vs Inter">
-                </div>
-                <div class="form-group">
-                    <label for="eventDateTime">Data e Hora do Evento:</label>
-                    <input type="datetime-local" id="eventDateTime">
-                </div>
-                <div class="form-group">
-                    <label for="newEventType">Tipo de Aposta/Mercado:</label>
-                    <select id="newEventType" onchange="updateNewEventOdds()">
-                        <option value="futebol_1x2">Futebol (1X2)</option>
-                        <option value="tenis_mesa_12">Tênis de Mesa (12)</option>
-                        <option value="total_gols_ou">Total de Gols (Acima/Abaixo)</option>
-                        <option value="ambos_marcam">Ambos Marcam</option>
-                    </select>
-                </div>
-                <div class="odds-inputs" id="newOddsInputContainer">
-                    <div class="form-group">
-                        <label for="newOdd_1">Odd Time A (1):</label>
-                        <input type="number" id="newOdd_1" value="2.00" step="0.01" min="1.01">
-                    </div>
-                    <div class="form-group">
-                        <label for="newOdd_X">Odd Empate (X):</label>
-                        <input type="number" id="newOdd_X" value="3.20" step="0.01" min="1.01">
-                    </div>
-                    <div class="form-group">
-                        <label for="newOdd_2">Odd Time B (2):</label>
-                        <input type="number" id="newOdd_2" value="3.50" step="0.01" min="1.01">
-                    </div>
-                </div>
-                <button onclick="addNewEventToList()">Adicionar Evento à Lista</button>
             </div>
             
             <div class="form-group">
-                 <h3>Eventos Adicionados (<span id="currentEventCount">0</span>)</h3>
-                 <div id="eventsListContainer">
-                    <p>Nenhum evento adicionado ainda. Use o formulário acima.</p>
-                 </div>
+                <label for="eventName">Nome do Evento (ex: Time A vs Time B):</label>
+                <input type="text" id="eventName" placeholder="Ex: Flamengo vs Vasco">
             </div>
-           
-            <button onclick="generateCombinations()">Gerar e Ver Combinações</button>
-            <button onclick="removeLastEventFromList()">Remover Último Evento da Lista</button>
-            <button onclick="exportData()">Exportar Dados</button>
-            <button onclick="importData()" class="import-data-button">Importar Dados</button>
-            <button onclick="clearAllData()" class="clear-data-button">Limpar Todos os Dados</button>
+
+            <div class="form-group">
+                <label for="eventDateTime">Data/Hora do Evento:</label>
+                <input type="datetime-local" id="eventDateTime">
+            </div>
+
+            <div class="form-group">
+                <label for="newEventType">Tipo de Esporte/Mercado:</label>
+                <select id="newEventType" onchange="updateNewEventOdds()">
+                    <option value="futebol_1x2">Futebol (1X2)</option>
+                    <option value="tenis_mesa_12">Tênis de Mesa (12)</option>
+                    <option value="total_gols_ou">Total de Gols (Acima/Abaixo)</option>
+                    <option value="ambos_marcam">Ambos Marcam</option>
+                </select>
+            </div>
+
+            <div id="newOddsInputContainer">
+                </div>
+            
+            <div class="button-group">
+                <button onclick="addNewEventToList()">Adicionar Evento à Lista</button>
+                <button class="secondary-button" onclick="resetNewEventForm()">Limpar Formulário</button>
+                <button class="secondary-button" onclick="removeLastEventFromList()">Remover Último Evento</button>
+            </div>
         </div>
 
         <hr>
 
-        <div class="output-section"> <h2>Combinações Geradas (<span id="selectedCountDisplay">0/0 Selecionadas</span>)</h2>
-            <p id="totalCombinationsCount">Total de Combinações Geradas: 0</p>
-            
-            <div class="filter-sort-controls">
-                <h4>Opções de Visualização:</h4>
-                <div class="form-group inline-group">
-                    <label for="minOddFilter">Odd Total Mínima:</label>
-                    <input type="number" id="minOddFilter" step="0.01" min="1.01" value="1.01" oninput="applyFiltersAndSort()">
-                </div>
-                <div class="form-group inline-group">
-                    <label for="maxOddFilter">Odd Total Máxima:</label>
-                    <input type="number" id="maxOddFilter" step="0.01" min="1.01" value="99999.99" oninput="applyFiltersAndSort()">
-                </div>
-                <div class="form-group inline-group">
-                    <label for="sortOrder">Ordenar por Odd Total:</label>
-                    <select id="sortOrder" onchange="applyFiltersAndSort()">
-                        <option value="none">Padrão</option>
-                        <option value="asc">Menor para Maior</option>
-                        <option value="desc">Maior para Menor</option>
-                    </select>
-                </div>
-                <div class="form-group inline-group">
-                    <label for="searchText">Buscar no Bilhete:</label>
-                    <input type="text" id="searchText" placeholder="Ex: Time A, 2.5 Gols" oninput="applyFiltersAndSort()">
-                </div>
+        <div class="output-section">
+            <h2>Eventos Adicionados (<span id="currentEventCount">0</span>)</h2>
+            <div id="eventsListContainer">
+                <p>Nenhum evento adicionado ainda. Use o formulário acima.</p>
             </div>
-            <hr>
+            </div>
 
+        <hr>
+
+        <div class="filter-sort-section">
+            <h2>Filtros e Ordenação das Combinações</h2>
+            <div class="form-group-inline">
+                <label for="minOddFilter">Odd Mínima:</label>
+                <input type="number" id="minOddFilter" value="1.01" min="1.01" step="0.01">
+            </div>
+            <div class="form-group-inline">
+                <label for="maxOddFilter">Odd Máxima:</label>
+                <input type="number" id="maxOddFilter" value="99999.99" min="1.01" step="0.01">
+            </div>
+            <div class="form-group-inline">
+                <label for="sortOrder">Ordenar por Odd Total:</label>
+                <select id="sortOrder">
+                    <option value="none">Padrão</option>
+                    <option value="asc">Crescente</option>
+                    <option value="desc">Decrescente</option>
+                </select>
+            </div>
+            <div class="form-group-inline">
+                <label for="searchText">Buscar nas Combinações:</label>
+                <input type="text" id="searchText" placeholder="Ex: Flamengo, Empate, Over">
+            </div>
+            <button onclick="applyFiltersAndSort()">Aplicar Filtros e Ordenação</button>
+        </div>
+
+        <hr>
+
+        <div class="combinations-section">
+            <h2>Combinações Geradas</h2>
+            <p id="totalCombinationsCount">Total de Combinações Geradas: 0</p>
             <div id="combinationsOutput">
-                <p>Nenhuma combinação gerada ainda. Adicione eventos e clique em 'Gerar'.</p>
+                <p>Adicione eventos para ver as combinações aqui.</p>
             </div>
         </div>
 
         <hr>
 
         <div class="summary-section">
-            <h2>Resumo da Estratégia Selecionada</h2>
-            
-            <p>Investimento Total Desejado (Base): R$ <span id="displayStakePerBet">0.00</span></p>
+            <h2>Resumo da Estratégia</h2>
+            <p>Valor de Aposta por Bilhete (ou Retorno Bruto Desejado): R$ <span id="displayStakePerBet">0.00</span></p>
+            <p>Total de Bilhetes Selecionados: <span id="selectedCountDisplay">0/0 Selecionadas</span></p>
             <p>Total de Bilhetes Selecionados: <span id="summarySelectedCount">0</span></p>
             <p><strong>Investimento Total Real: R$ <span id="totalInvestment">0.00</span></strong></p>
             <p><strong>Retorno Potencial Bruto: R$ <span id="potentialReturn">0.00</span></strong></p>
@@ -146,6 +136,173 @@
             <button onclick="checkWinningCombinations()">Conferir Combinações Vencedoras</button>
             <div id="winningCombinationsOutput">
                 </div>
+        </div>
+
+        <hr>
+
+        <div class="data-management-section">
+            <h2>Gerenciamento de Dados</h2>
+            <p>Salve ou carregue seus dados, ou limpe tudo para começar do zero.</p>
+            <div class="button-group">
+                <button class="data-action-button" onclick="exportData()">Exportar Dados</button>
+                <button class="data-action-button" onclick="importData()">Importar Dados</button>
+                <button class="delete-button" onclick="clearAllData()">Limpar Todos os Dados</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="about-section">
+            <h2>Sobre a Calculadora</h2>
+            <p>Esta calculadora permite que você configure eventos esportivos, suas odds e resultados possíveis, gere todas as combinações de apostas possíveis e, em seguida, selecione as combinações desejadas para analisar o investimento e o lucro potencial. Também oferece recursos de filtragem, ordenação, e a capacidade de conferir resultados reais.</p>
+
+            <h3>Visão Geral da Interface</h3>
+            <p>A calculadora é dividida em algumas seções principais:</p>
+            <ul>
+                <li><strong>Configuração dos Eventos:</strong> Onde você adiciona, edita e gerencia os eventos e suas odds.</li>
+                <li><strong>Combinações Geradas:</strong> Exibe todas as combinações possíveis baseadas nos seus eventos e permite que você as selecione.</li>
+                <li><strong>Resumo da Estratégia:</strong> Mostra o investimento total, retorno potencial, lucro e outras métricas com base nas suas seleções.</li>
+                <li><strong>Filtros e Ordenação:</strong> Ajuda a refinar a visualização das combinações.</li>
+                <li><strong>Conferência de Resultados:</strong> Permite que você insira os resultados reais dos eventos para verificar quais bilhetes foram vencedores.</li>
+                <li><strong>Gerenciamento de Dados:</strong> Funções para exportar, importar e limpar todos os dados.</li>
+            </ul>
+
+            <h3>Seções e Funcionalidades Detalhadas</h3>
+            <h4>1. Configuração dos Eventos</h4>
+            <p>Esta seção é onde você define os eventos esportivos que farão parte das suas múltiplas.</p>
+            <ul>
+                <li><strong>Investimento Total Desejado (R$):</strong>
+                    <ul>
+                        <li>Este campo define a base para o cálculo das apostas.</li>
+                        <li><strong>Para "Distribuição Direta":</strong> Este será o valor da aposta por cada bilhete selecionado.</li>
+                        <li><strong>Para "Distribuição Otimizada":</strong> Este é o <em>retorno bruto desejado</em> que você receberá se <em>qualquer</em> bilhete selecionado vencer (o valor da aposta em cada bilhete será ajustado para garantir esse retorno).</li>
+                    </ul>
+                </li>
+                <li><strong>Tipo de Distribuição da Aposta:</strong>
+                    <ul>
+                        <li><strong>Direta (Mesmo valor por bilhete):</strong> Cada bilhete selecionado receberá o mesmo valor de aposta (o "Investimento Total Desejado").</li>
+                        <li><strong>Otimizada (Lucro igual por bilhete):</strong> O sistema calcula automaticamente qual valor apostar em cada bilhete selecionado para que, se qualquer um deles vencer, o lucro líquido seja o mesmo. O "Investimento Total Desejado" neste caso funciona como o <em>retorno bruto</em> que você busca.</li>
+                    </ul>
+                </li>
+                <li><strong>Adicionar Novo Evento à Lista:</strong>
+                    <ul>
+                        <li><strong>Nome do Evento:</strong> Insira o nome do confronto (ex: "Time A vs Time B").</li>
+                        <li><strong>Data/Hora do Evento:</strong> Selecione a data e o horário.</li>
+                        <li><strong>Tipo de Esporte/Mercado:</strong> Escolha entre os mercados disponíveis:
+                            <ul>
+                                <li><strong>Futebol (1X2):</strong> Selecione as odds para "Time A (1)", "Empate (X)" e "Time B (2)".</li>
+                                <li><strong>Tênis de Mesa (12):</strong> Selecione as odds para "Jogador A (1)", "Jogador B (2)".</li>
+                                <li><strong>Total de Gols (Acima/Abaixo):</strong> Selecione as odds para "Acima de X Gols (Over)" e "Abaixo de X Gols (Under)". <strong>Importante:</strong> Você também precisará definir a <strong>Linha de Gols</strong> (ex: 2.5).</li>
+                                <li><strong>Ambos Marcam:</strong> Selecione as odds para "Sim (BTTS Yes)" e "Não (BTTS No)".</li>
+                            </ul>
+                        </li>
+                        <li>Após preencher os campos e as odds, clique em <strong>"Adicionar Evento à Lista"</strong>.</li>
+                    </ul>
+                </li>
+                <li><strong>Lista de Eventos Adicionados:</strong>
+                    <ul>
+                        <li>Aqui você verá todos os eventos que adicionou. Cada evento é exibido em um "cartão" com suas informações e odds.</li>
+                        <li><strong>Botões de Ação:</strong>
+                            <ul>
+                                <li><strong>Editar:</strong> Clique para preencher o formulário de adição/edição com os dados do evento selecionado. Faça suas alterações e clique em "Salvar Edição".</li>
+                                <li><strong>Excluir:</strong> Remove o evento da lista permanentemente.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>Botão "Remover Último Evento":</strong> Remove o evento que foi adicionado mais recentemente à lista.</li>
+            </ul>
+
+            <h4>2. Combinações Geradas</h4>
+            <p>Esta seção é onde a mágica acontece. O sistema gera automaticamente todas as combinações possíveis baseadas nos eventos que você configurou.</p>
+            <ul>
+                <li><strong>Total de Combinações Geradas:</strong> Mostra o número total de bilhetes possíveis com base nos seus eventos.</li>
+                <li><strong>Lista de Combinações:</strong> Cada combinação é apresentada com:
+                    <ul>
+                        <li>Um <strong>checkbox</strong> para seleção.</li>
+                        <li>Os <strong>detalhes da aposta</strong> para cada evento na combinação (ex: "Flamengo vs Vasco: Time A | Jogador A vs Jogador B: Jogador A").</li>
+                        <li>A <strong>Odd Total</strong> daquela combinação específica.</li>
+                    </ul>
+                </li>
+                <li><strong>Seleção de Bilhetes:</strong> Clique no checkbox ao lado de cada combinação para selecioná-la. As combinações selecionadas serão destacadas.</li>
+            </ul>
+
+            <h4>3. Resumo da Estratégia</h4>
+            <p>Esta seção fornece uma análise financeira detalhada com base nas combinações que você selecionou.</p>
+            <ul>
+                <li><strong>Investimento Total Desejado (R$):</strong> Repete o valor que você definiu.</li>
+                <li><strong>Total de Bilhetes Selecionados:</strong> Quantidade de combinações que você marcou.</li>
+                <li><strong>Investimento Total Real:</strong>
+                    <ul>
+                        <li><strong>Direta:</strong> (Investimento Total Desejado) x (Total de Bilhetes Selecionados).</li>
+                        <li><strong>Otimizada:</strong> O valor total que precisa ser apostado em <em>todos</em> os bilhetes para garantir o "Retorno Potencial Bruto" que você definiu.</li>
+                    </ul>
+                </li>
+                <li><strong>Retorno Potencial Bruto:</strong>
+                    <ul>
+                        <li><strong>Direta:</strong> O retorno do bilhete selecionado com a maior odd total.</li>
+                        <li><strong>Otimizada:</strong> O valor que você receberá se <em>qualquer</em> um dos bilhetes selecionados vencer (igual ao "Investimento Total Desejado" inicial neste modo).</li>
+                    </ul>
+                </li>
+                <li><strong>Lucro Líquido Potencial:</strong> Retorno Potencial Bruto - Investimento Total Real.</li>
+                <li><strong>Multiplicador:</strong> Lucro Líquido Potencial / Investimento Total Real (indica quantas vezes o investimento você pode lucrar).</li>
+                <li><strong>Mensagem de Lucro:</strong> Uma mensagem descritiva sobre o lucro potencial da sua estratégia, indicando se é lucrativa, deficitária ou neutra.</li>
+                <li><strong>Apostas Individuais (Distribuição Otimizada):</strong> Se você escolher a distribuição otimizada, esta subseção mostrará o valor exato a ser apostado em cada bilhete selecionado para garantir o lucro igual.</li>
+            </ul>
+
+            <h4>4. Filtros e Ordenação</h4>
+            <p>Use estas ferramentas para gerenciar a visualização de um grande número de combinações.</p>
+            <ul>
+                <li><strong>Odd Mínima (filtro):</strong> Exibe apenas combinações com Odd Total igual ou superior a este valor.</li>
+                <li><strong>Odd Máxima (filtro):</strong> Exibe apenas combinações com Odd Total igual ou inferior a este valor.</li>
+                <li><strong>Ordenar por Odd Total:</strong>
+                    <ul>
+                        <li><strong>Padrão:</strong> Mantém a ordem original de geração.</li>
+                        <li><strong>Crescente:</strong> Ordena as combinações da menor Odd Total para a maior.</li>
+                        <li><strong>Decrescente:</strong> Ordena as combinações da maior Odd Total para a menor.</li>
+                    </ul>
+                </li>
+                <li><strong>Buscar nas Combinações:</strong> Digite um texto (ex: nome de um time, "Empate") para filtrar as combinações que contenham esse texto em seus detalhes.</li>
+                <li><strong>Botão "Aplicar Filtros e Ordenação":</strong> Clique para atualizar a lista de combinações com base nos seus critérios.</li>
+            </ul>
+
+            <h4>5. Conferência de Resultados</h4>
+            <p>Esta seção permite que você insira os resultados reais dos eventos para descobrir quais de suas combinações de apostas foram vencedoras.</p>
+            <ul>
+                <li><strong>Resultados de Eventos:</strong> Para cada evento que você adicionou, haverá um menu suspenso para você selecionar o resultado final (ex: "Time A", "Empate", "Time B").</li>
+                <li><strong>Botão "Conferir Combinações Vencedoras":</strong> Após selecionar os resultados para <em>todos</em> os seus eventos, clique neste botão para ver quais bilhetes selecionados (ou mesmo os não selecionados, se a lógica interna permitir) correspondem aos resultados reais e seriam vencedores.</li>
+                <li><strong>Saída de Combinações Vencedoras:</strong> Se houver bilhetes vencedores, eles serão listados aqui com seus detalhes e Odd Total.</li>
+            </ul>
+
+            <h4>6. Gerenciamento de Dados</h4>
+            <ul>
+                <li><strong>Exportar Dados:</strong>
+                    <ul>
+                        <li>Salva todos os dados da sua calculadora (eventos, combinações geradas, seleções, configurações e resultados reais) em um arquivo <code>.json</code> no seu computador.</li>
+                        <li>Útil para fazer backup ou transferir seus dados para outra sessão/máquina.</li>
+                    </ul>
+                </li>
+                <li><strong>Importar Dados:</strong>
+                    <ul>
+                        <li>Permite carregar um arquivo <code>.json</code> previamente exportado, restaurando todos os seus dados e configurações na calculadora.</li>
+                        <li><strong>Atenção:</strong> Isso substituirá <em>todos</em> os dados atuais na calculadora.</li>
+                    </ul>
+                </li>
+                <li><strong>Limpar Todos os Dados:</strong>
+                    <ul>
+                        <li>Apaga <em>todos</em> os eventos, combinações, seleções e configurações salvas na calculadora, retornando-a ao estado inicial.</li>
+                        <li>Uma confirmação será solicitada, pois esta ação é irreversível.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Dicas de Uso</h3>
+            <ul>
+                <li>Comece adicionando poucos eventos para se familiarizar com a geração de combinações, que são atualizadas automaticamente.</li>
+                <li>Experimente os diferentes tipos de "Distribuição da Aposta" para ver como eles afetam o investimento e o retorno.</li>
+                <li>Utilize os filtros e a busca para encontrar combinações específicas, especialmente se você tiver muitos eventos e centenas de combinações.</li>
+                <li>Faça backups regulares dos seus dados usando a função de "Exportar Dados".</li>
+            </ul>
         </div>
 
     </div>
